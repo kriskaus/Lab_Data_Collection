@@ -1,0 +1,12 @@
+<div class="upload-section">
+    <h2>Upload File</h2>
+    <input type="file" (change)="onFileSelected($event)" />
+    <button (click)="uploadFile()" *ngIf="selectedFile">Upload</button>
+  </div>
+  
+  <div class="download-section">
+    <h2>Download File</h2>
+    <button (click)="downloadFile(selectedFile?.name)">Download</button>
+    <span *ngIf="selectedFile">{{ selectedFile.name }}</span>
+  </div>
+  
