@@ -8,7 +8,7 @@ import { UserService } from '../services/user.service';
   styleUrl: './register.component.scss'
 })
 export class RegisterComponent {
-  public username!: Number;
+  public username!: string;
   public password!: string;
   public email! : string;
 

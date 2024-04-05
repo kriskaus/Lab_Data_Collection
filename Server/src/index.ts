@@ -30,22 +30,41 @@ app.use(session({
 }));
 
 // Initialize Passport.js middleware
-// app.use(passport .initialize());
+app.use(passport .initialize());
 
 // // Use session middleware for persisting login sessions
-// app.use(passport.session());
+app.use(passport.session());
 
 // Configure Passport.js
 passport.use(new LocalStrategy(
   async (username, password, done) => {
       try {
           // Find user by username
-          const user = await db.findOne({ where: { username } });
+          const user = await db.User.findOne({ where: { username } });
+          console.log(username,"vyjjhh0" + password)
+          console.log(user)
+          console.log(user.dataValues.password)
 
-          // If user not found or password is incorrect
-          if (!user || !bcrypt.compareSync(password, user.password)) {
-              return done(null, false, { message: 'Incorrect username or password' });
-          }
+           // Check if user exists
+      if (!user) {
+        console.log('User not found');
+        return done(null, false, { message: 'Incorrect username or password' });
+      }
+
+      // Check if password is undefined
+      if (!password) {
+        console.log('Password is undefined');
+        return done(null, false, { message: 'Password is required' });
+      }
+
+      // Compare passwords
+      const isPasswordValid = bcrypt.compareSync(password, user.dataValues.password);
+      console.log(isPasswordValid)
+
+      if (!isPasswordValid) {
+        return done(null, false, { message: 'Incorrect username or password' });
+      }
+
 
           // If authentication succeeds, return user
           return done(null, user);
@@ -62,7 +81,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id:number, done) => {
   try {
-      const user = await db.findByPk(id);
+      const user = await db.User.findByPk(id);
       done(null, user);
   } catch (error) {
       console.error('Error deserializing user:', error);
@@ -122,37 +141,33 @@ app.get('/download/:filename',ensureAuthenticated, (req, res) => {
 });
 
 // Register user route
+// Register user route
 app.post('/register', async (req, res) => {
-  console.log(req.body)
   try {
-    if (req.session && req.session.id) {
-      // User is authenticated, render profile page with user data
-      const {username, password, email } = req.body;
-      if (!username || !email || !password) {
-        return res.status(400).json({ error: 'Missing required fields' });
+    const { username, password, email } = req.body;
+    if (!username || !email || !password) {
+      return res.status(400).json({ error: 'Missing required fields' });
     }
-      const hashedPassword = bcrypt.hashSync(password, 10);
-      const newUser = await db.User.createUser({ username, password: hashedPassword, email });
-      res.send('/login');
-      res.status(201).json({ message: 'User registered successfully', user: newUser });
-      res.render('profile', { user: req.session.id });
-  }
+    const hashedPassword = bcrypt.hashSync(password, 10);
+    const newUser = await db.User.create({ username, password: hashedPassword, email }); // Use `create` instead of `createUser`
+    res.status(201).json({ message: 'User registered successfully', user: newUser });
   } catch (error) {
-      console.error('Error registering user:', error);
-      res.redirect('/login');
-      res.status(500).json({ error: 'An error occurred while registering user' });
+    console.error('Error registering user:', error);
+    res.status(500).json({ error: 'An error occurred while registering user' });
   }
 });
 
+
 // Login route
 app.post('/login', passport.authenticate('local',{
-  successRedirect: '/home',
+  // successRedirect: '/home',
   failureRedirect: '/login',
-  failureFlash: true
+  failureFlash: false
 } ), (req, res) => {
 
+
 ; // Store user data in the session
-  res.redirect('/login')
+  // res.redirect('/login')
   res.json({ message: 'Login successful', user: req.user });
 });
 
