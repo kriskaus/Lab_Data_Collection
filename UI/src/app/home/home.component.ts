@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UploadService } from '../services/upload.service';
-import { error } from 'console';
+import { UserService } from '../services/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -13,7 +14,7 @@ export class HomeComponent {
   public showFile: File | null = null;
   UploadService: any;
 
-  constructor(private http: HttpClient, private uploadService: UploadService) {}
+  constructor(private http: HttpClient, private uploadService: UploadService, private userService: UserService, private router: Router) {}
 
   onFileSelected(event: any) {
     if (event.target.files.length > 0) {
@@ -48,13 +49,25 @@ export class HomeComponent {
         const link = document.createElement('a');
         link.href = downloadURL;
         link.download = filename;
-        link.click();
-        console.log('file download successfully');
       },
-
       error: (err) => {
+
         console.error('Failed to download file', err);
       },
     });
   }
+
+ public logout() {
+  this.userService.logoutUser()
+  .subscribe({
+      next : () => {
+        this.router.navigate(["/login"])
+          console.log('User logged out successfully');
+          // Optionally, redirect to another page after successful logout
+      },
+      error: (error) => {
+          console.error('Logout failed:', error);
+      }
+    });
+ }
 }

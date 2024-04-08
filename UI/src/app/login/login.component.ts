@@ -32,16 +32,7 @@ public submit() {
     );
 
 // Inside a component where user logout happens
-// this.userService.logoutUser()
-//     .subscribe({
-//         next : () => {
-//             console.log('User logged out successfully');
-//             // Optionally, redirect to another page after successful logout
-//         },
-//         error: (error) => {
-//             console.error('Logout failed:', error);
-//         }
-//       });
+// 
   }
 
   

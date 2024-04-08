@@ -5,18 +5,20 @@ import multer from 'multer';
 import path from "path";
 import fs from 'fs';
 import passport from 'passport';
-import { Strategy as LocalStrategy } from 'passport-local';
+
 import bcrypt from 'bcryptjs';
 import db from '../models';
-
-const app:Express = express();
+import { Strategy as LocalStrategy } from 'passport-local';
+import {Info} from '../../UI/src/app/info';
+const app = express();
 app.use(express.json());
 const port = process.env.PORT || 3000;
 // Parse JSON bodies
-// app.use(bodyParser.json());
+
+app.use(express.json());
 
 // // Parse URL-encoded bodies
-// app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 
 app.use(cors());
 app.use(session({
@@ -30,12 +32,13 @@ app.use(session({
 }));
 
 // Initialize Passport.js middleware
-app.use(passport .initialize());
+app.use(passport.initialize());
 
 // // Use session middleware for persisting login sessions
 app.use(passport.session());
 
 // Configure Passport.js
+
 passport.use(new LocalStrategy(
   async (username, password, done) => {
       try {
@@ -76,7 +79,8 @@ passport.use(new LocalStrategy(
 ));
 
 passport.serializeUser((user, done) => {
-  done(null, user);
+  console.log("khcbsdkhcsjkvcbsdjvbkwvwjvblsjdvljeWVELWJ"+ user)
+  done(null, (user as any).id);
 });
 
 passport.deserializeUser(async (id:number, done) => {
@@ -88,6 +92,7 @@ passport.deserializeUser(async (id:number, done) => {
       done(error);
   }
 });
+
 // Configure Multer storage
 const storage = multer.diskStorage({
   destination: (req: Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
@@ -101,17 +106,52 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 
+
+
+
+//Middleware to see how the params are populated by Passport
+let count = 1
+
+const printData = (req: any, res:any, next: NextFunction) => {
+    console.log("\n==============================")
+    console.log(`------------>  ${count++}`)
+
+    console.log(`req.body.username -------> ${req.body.username}`) 
+    console.log(`req.body.password -------> ${req.body.password}`)
+
+    console.log(`\n req.session.passport -------> `)
+    console.log(req.session.passport)
+  
+    console.log(`\n req.user -------> `) 
+    console.log(req.user) 
+  
+    console.log("\n Session and Cookie")
+    console.log(`req.session.id -------> ${req.session.id}`) 
+    console.log(`req.session.cookie -------> `) 
+    console.log(req.session.cookie) 
+  
+    console.log("===========================================\n")
+
+    next()
+}
+
+app.use(printData)
+
+
+
+
 // / Serve static files from the React frontend app
 // app.use('/downloads', express.static(path.join(new URL('.', import.meta.url).pathname, 'downloads')));
-function ensureAuthenticated(req : Request, res:Response, next : NextFunction) {
+function ensureAuthenticated(req : any, res:any, next : NextFunction) {
   if (req.isAuthenticated()) {
+    console.log()
       return next();
   }
   res.status(401).send('Unauthorized');
 }
 
 // API endpoint for uploading files
-app.post('/upload',ensureAuthenticated, upload.single('file'), (req: Request, res: Response) => {
+app.post('/upload',ensureAuthenticated, upload.single('file'), (req, res) => {
   console.log('File uploaded successfully:');
   res.status(200).json({ message: 'File uploaded successfully' });
 });
@@ -159,27 +199,29 @@ app.post('/register', async (req, res) => {
 
 
 // Login route
-app.post('/login', passport.authenticate('local',{
-  // successRedirect: '/home',
-  failureRedirect: '/login',
-  failureFlash: false
-} ), (req, res) => {
-
-
-; // Store user data in the session
-  // res.redirect('/login')
-  res.json({ message: 'Login successful', user: req.user });
+app.post('/login', passport.authenticate('local'), (req, res) => {
+  res.status(200).json({ message: 'Login successful', user: req.user });
 });
+
 
 // Logout route
 app.get('/logout', (req, res) => {
   req.logout(() => {
-    res.json({ message: 'Logout successful' });
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Error destroying session:', err);
+        res.status(500).json({ message: 'Error logging out' });
+      } else {
+        res.json({ message: 'Logout successful' });
+      }
+    });
   });
 });
 
 db.sequelize.sync().then(() =>{
   console.log(db.User)
+  console.log(db.FileActivity)
+  console.log(db.UserActivity)
   app.listen(port, () => {
     console.log(`Server is running on port  http://localhost:${port}`);
   });

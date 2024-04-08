@@ -11,7 +11,7 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { HomeComponent } from './home/home.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
+import { HttpClient, HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
 import { UploadService } from './services/upload.service';
 import { UserService } from './services/user.service';
 import { RegisterComponent } from './register/register.component';
@@ -38,7 +38,8 @@ import { RegisterComponent } from './register/register.component';
     provideClientHydration(),
     provideHttpClient(),
     UploadService,
-    UserService
+    UserService,
+    provideHttpClient(withFetch())
   ],
   bootstrap: [AppComponent],
   exports: [

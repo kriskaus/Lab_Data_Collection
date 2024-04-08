@@ -6,6 +6,7 @@ import  {Info}  from '../info';
   providedIn: 'root'
 })
 export class UserService {
+  private _isAuthenticated: boolean = false;
 
   constructor( private http: HttpClient) { }
 
@@ -14,11 +15,18 @@ public registerUser(email: string, username: string, password: string,) {
 }
 
 public loginUser(username: string, password: string) {
+  this._isAuthenticated = true;
   return this.http.post(`${Info.ServerUrl}/login`, { username, password });
+
 }
 
 public logoutUser() {
+  this._isAuthenticated = false;
   return this.http.get(`${Info.ServerUrl}/logout`);
+}
+
+public isAuthenticated() {
+  return this._isAuthenticated;
 }
 
 }
