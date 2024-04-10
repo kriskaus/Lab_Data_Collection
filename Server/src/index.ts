@@ -176,7 +176,7 @@ app.post('/upload', upload.single('file'),async (req, res) => {
     console.log(userId, filename, uploadTime, IPAddress);
 
     // Create a new FileActivity record in the database
-    const newFileActivity = await db.FileActivity.create({
+    const newFileActivity = await db.fileactivity.create({
       userId,
       uploadTime,
       filename,
