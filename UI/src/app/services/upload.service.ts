@@ -19,5 +19,9 @@ export class UploadService {
   const url = `${Info.ServerUrl}/download/${filename}`;
    return this.httpClient.get(url, { responseType: 'blob' })
  }
+
+ public getAllFiles() {
+  return this.httpClient.get<any[]>(`${Info.ServerUrl}/files`); // Adjust the endpoint according to your API
+}
  
 }

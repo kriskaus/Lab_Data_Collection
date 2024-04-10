@@ -10,16 +10,16 @@ interface UserActivityAttributes {
 // UserActivity model for storing login/logout activities
 export default (sequelize: Sequelize, DataTypes: any) => {
     class UserActivity extends Model<UserActivityAttributes> implements UserActivityAttributes {
-        public userId!: number;
-        public loginTime!: Date;
-        public logoutTime!: Date | null;
-        public IPAddress!: string;
+        declare userId: number;
+        declare loginTime: Date;
+        declare logoutTime: Date | null;
+        declare IPAddress: string;
     
         static associate(models: any) {
             // Define associations here if needed
             UserActivity.hasMany(models.User, {
                 foreignKey: 'userId',
-                // as: 'userActivities', // Alias for the association
+                as: 'useractivity', // Alias for the association
               });}
     }
 
@@ -41,7 +41,7 @@ export default (sequelize: Sequelize, DataTypes: any) => {
     },
   }, {
     sequelize : connection,
-    tableName: 'UserActivity',
+    modelName: 'useractivity',
   });
 // Define associations
 

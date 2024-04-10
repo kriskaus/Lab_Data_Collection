@@ -13,12 +13,17 @@ import {Info} from '../../UI/src/app/info';
 const app = express();
 app.use(express.json());
 const port = process.env.PORT || 3000;
+import bodyParser from "body-parser";
+import { Connection } from "mysql2/typings/mysql/lib/Connection";
 // Parse JSON bodies
 
-app.use(express.json());
+let user:any = {};
 
+app.use(bodyParser.json());
+
+let id="";
 // // Parse URL-encoded bodies
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cors());
 app.use(session({
@@ -32,21 +37,40 @@ app.use(session({
 }));
 
 // Initialize Passport.js middleware
-app.use(passport.initialize());
+app.use (passport.initialize());
 
 // // Use session middleware for persisting login sessions
-app.use(passport.session());
+app.use (passport.session());
 
 // Configure Passport.js
+passport.serializeUser(function(user, done) {
+      user=id;
+      console.log("11111111111111111111111111111111111")
+      done(null, user);
+      console.log("11111111111111111111111111111111111")
+     });
+
+passport.deserializeUser(async (id:number, done) => {
+  try {
+      const user = await db.User.findByPk(id);
+      done(null, user);
+  } catch (error) {
+      console.error('Error deserializing user:', error);
+      done(error);
+  }
+});
+
 
 passport.use(new LocalStrategy(
   async (username, password, done) => {
       try {
           // Find user by username
-          const user = await db.User.findOne({ where: { username } });
+          let user = await db.User.findOne({ where: { username } });
           console.log(username,"vyjjhh0" + password)
-          console.log(user)
-          console.log(user.dataValues.password)
+          console.log(user.username)
+          console.log(user.password)
+          id=user.username
+        
 
            // Check if user exists
       if (!user) {
@@ -61,7 +85,7 @@ passport.use(new LocalStrategy(
       }
 
       // Compare passwords
-      const isPasswordValid = bcrypt.compareSync(password, user.dataValues.password);
+      const isPasswordValid = bcrypt.compareSync(password, user.password);
       console.log(isPasswordValid)
 
       if (!isPasswordValid) {
@@ -78,20 +102,7 @@ passport.use(new LocalStrategy(
   }
 ));
 
-passport.serializeUser((user, done) => {
-  console.log("khcbsdkhcsjkvcbsdjvbkwvwjvblsjdvljeWVELWJ"+ user)
-  done(null, (user as any).id);
-});
 
-passport.deserializeUser(async (id:number, done) => {
-  try {
-      const user = await db.User.findByPk(id);
-      done(null, user);
-  } catch (error) {
-      console.error('Error deserializing user:', error);
-      done(error);
-  }
-});
 
 // Configure Multer storage
 const storage = multer.diskStorage({
@@ -119,8 +130,11 @@ const printData = (req: any, res:any, next: NextFunction) => {
     console.log(`req.body.username -------> ${req.body.username}`) 
     console.log(`req.body.password -------> ${req.body.password}`)
 
+    console.log(req.user?.passport.user)
+
     console.log(`\n req.session.passport -------> `)
     console.log(req.session.passport)
+   
   
     console.log(`\n req.user -------> `) 
     console.log(req.user) 
@@ -144,21 +158,45 @@ app.use(printData)
 // app.use('/downloads', express.static(path.join(new URL('.', import.meta.url).pathname, 'downloads')));
 function ensureAuthenticated(req : any, res:any, next : NextFunction) {
   if (req.isAuthenticated()) {
-    console.log()
+    console.log(req.user)
       return next();
   }
   res.status(401).send('Unauthorized');
 }
 
 // API endpoint for uploading files
-app.post('/upload',ensureAuthenticated, upload.single('file'), (req, res) => {
-  console.log('File uploaded successfully:');
-  res.status(200).json({ message: 'File uploaded successfully' });
+app.post('/upload', upload.single('file'),async (req, res) => {
+  try {
+    // Extract relevant information from the request
+    const userId = id;
+    console.log("user iddddddddddddddd",id)
+    const filename = req.file?.filename;
+    const uploadTime = new Date();
+    const IPAddress = req.ip; // Get the client's IP address from the request
+    console.log(userId, filename, uploadTime, IPAddress);
+
+    // Create a new FileActivity record in the database
+    const newFileActivity = await db.FileActivity.create({
+      userId,
+      uploadTime,
+      filename,
+      IPAddress,
+    });
+    // Log a message to indicate that the file was uploaded successfully
+    console.log('File uploaded successfully');
+    
+    // Send a response to the client
+    res.status(200).json({ message: 'File uploaded successfully', fileActivity: newFileActivity });
+  } catch (error) {
+    // If an error occurs, log the error and send a 500 internal server error response
+    console.error('Error uploading file:', error);
+    res.status(500).json({ error: 'An error occurred while uploading file' });
+  }
 });
 
 
 // API endpoint for downloading files
-app.get('/download/:filename',ensureAuthenticated, (req, res) => {
+app.get('/download/:filename', (req, res) => {
   console.log(__dirname, __filename)
   const filename = req.params.filename; // Extract the filename from the request parameters
   const filePath = path.join(__dirname, '../uploads', filename); // Construct the file path
@@ -200,6 +238,7 @@ app.post('/register', async (req, res) => {
 
 // Login route
 app.post('/login', passport.authenticate('local'), (req, res) => {
+  
   res.status(200).json({ message: 'Login successful', user: req.user });
 });
 
@@ -218,10 +257,27 @@ app.get('/logout', (req, res) => {
   });
 });
 
+app.get('/files', async (req, res) => {
+  try {
+    // Query the database to get all files
+    const files = await db.FileActivity.findAll();
+    console.log(files)
+
+    // If there are no files, return a 404 error
+    if (!files || files.length === 0) {
+      return res.status(404).json({ error: 'No files found' });
+    }
+
+    // If files are found, return them in the response
+    res.json(files);
+    console.log(files)
+  } catch (error) {
+    console.error('Error fetching files:', error);
+    res.status(500).json({ error: 'An error occurred while fetching files' });
+  }
+});
+
 db.sequelize.sync().then(() =>{
-  console.log(db.User)
-  console.log(db.FileActivity)
-  console.log(db.UserActivity)
   app.listen(port, () => {
     console.log(`Server is running on port  http://localhost:${port}`);
   });

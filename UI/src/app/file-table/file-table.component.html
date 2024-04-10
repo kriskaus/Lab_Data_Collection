@@ -1,0 +1,15 @@
+<table>
+    <thead>
+      <tr>
+        <th>Filename</th>
+        <th>Download</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let file of files">
+        <td>{{ file.filename }}</td>
+        <td><button (click)="downloadFile(file.filename)">Download</button></td>
+      </tr>
+    </tbody>
+  </table>
+  

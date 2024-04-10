@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('UserActivity', {
+    await queryInterface.createTable('userActivity', {
 
         id: {
           allowNull: false,
@@ -23,10 +23,12 @@ module.exports = {
         IPAddress: {
           type: Sequelize.STRING
         }
+      
     })
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable('users');
+   
+     await queryInterface.dropTable('UserActivity');
   }
 };

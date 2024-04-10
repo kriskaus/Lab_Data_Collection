@@ -11,9 +11,9 @@ import connection from '../config/dbConnect'
 export default (sequelize:any, DataTypes:any) => {
   class User extends Model<UserAttributes> 
     implements UserAttributes{
-    public username!: string; // Note that the `null assertion` `!` is required
-    public password!: string;
-    public email!: string;
+    declare username: string; // Note that the `null assertion` `!` is required
+    declare password: string;
+    declare email: string;
 
     static async createUser(username: string, email: string, password: string): Promise<User> {
       // Use the Sequelize create method to insert a new record into the database

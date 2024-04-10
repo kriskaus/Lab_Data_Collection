@@ -15,13 +15,15 @@ import { HttpClient, HttpClientModule, provideHttpClient, withFetch } from '@ang
 import { UploadService } from './services/upload.service';
 import { UserService } from './services/user.service';
 import { RegisterComponent } from './register/register.component';
+import { FileTableComponent } from './file-table/file-table.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     HomeComponent,
-    RegisterComponent
+    RegisterComponent,
+    FileTableComponent
   ],
   imports: [
     BrowserModule,

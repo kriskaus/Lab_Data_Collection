@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { UploadService } from '../services/upload.service';
 import { UserService } from '../services/user.service';
 import { Router } from '@angular/router';
+import { saveAs } from 'file-saver';
+
 
 @Component({
   selector: 'app-home',
@@ -45,10 +47,11 @@ export class HomeComponent {
     }
     this.uploadService.downloadFile(filename).subscribe({
       next: (data) => {
-        const downloadURL = window.URL.createObjectURL(data);
-        const link = document.createElement('a');
-        link.href = downloadURL;
-        link.download = filename;
+        // const downloadURL = window.URL.createObjectURL(data);
+        // const link = document.createElement('a');
+        // link.href = downloadURL;
+        // link.download = filename;
+        saveAs(data, filename);
       },
       error: (err) => {
 

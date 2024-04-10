@@ -12,17 +12,17 @@ interface FileActivityAttributes {
 
 export default (sequelize: Sequelize, DataTypes: any) => {
   class FileActivity extends Model<FileActivityAttributes> implements FileActivityAttributes {
-    public userId!: number;
-    public uploadTime!: Date;
-    public downloadTime!: Date | null;
-    public filename!: string;
-    public IPAddress!: string;
+    declare userId: number;
+    declare uploadTime: Date;
+    declare downloadTime: Date | null;
+    declare filename: string;
+    declare IPAddress: string;
 
     static associate(models: any) {
         // Define associations here if needed
         FileActivity.hasMany(models.User, {
             foreignKey: 'userId',
-            // as: 'fileActivities', // Alias for the association
+            as: 'fileactivity', // Alias for the association
           });
     }
   }
@@ -49,7 +49,7 @@ export default (sequelize: Sequelize, DataTypes: any) => {
     },
   }, {
     sequelize: connection,
-    modelName: 'FileActivity',
+    modelName: 'fileactivity',
   });
 
   return FileActivity; // Ensure that FileActivity is returned as a constructor function

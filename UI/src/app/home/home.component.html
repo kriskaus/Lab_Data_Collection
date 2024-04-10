@@ -9,6 +9,8 @@
     <button (click)="downloadFile(selectedFile?.name)">Download</button>
     <span *ngIf="selectedFile">{{ selectedFile.name }}</span>
   </div>
+
+  <app-file-table></app-file-table>
   
   <div>
     <h2>Log out</h2>
