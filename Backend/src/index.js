@@ -1,16 +1,15 @@
-import express, { Express, NextFunction, Request, Response } from "express";
-import session from 'express-session'
-import cors from "cors";
-import multer from 'multer';
-import path from "path";
-import fs from 'fs';
-import passport from 'passport';
-import bcrypt from 'bcryptjs';
-import db from '../models';
-import sequelize  from "../config/dbConnect";
-import PassportInitialize from "./passportConfig";
-import {UpdateUserObject} from "../interface/UpdateUser";
-const SequelizeStore = require("connect-session-sequelize")(session.Store);
+const express = require("express");
+const session = require('express-session');
+const cors = require("cors");
+const multer = require('multer');
+const path = require("path");
+const fs = require('fs');
+const passport = require('passport');
+const bcrypt = require('bcryptjs');
+const db= require( '../models');
+const sequelize = require("../config/config.json");
+const PassportInitialize =require("./passportConfig");
+// const SequelizeStore = require("connect-session-sequelize")(session.Store);
 
 const app = express();
 
@@ -20,9 +19,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(session({
   secret: 'Lab_Server', // Change this to a random string
-  store: new SequelizeStore({
-    db:sequelize
-  }),
+//   store: new SequelizeStore({
+//     db:sequelize
+//   }),
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -49,10 +48,10 @@ let ipAddress ;
 
 // Configure Multer storage
 const storage = multer.diskStorage({
-  destination: (req: Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
+  destination: (req , file, cb) => {
     cb(null, 'uploads/');
   },
-  filename: (req: Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
+  filename: (req, file, cb) => {
     cb(null, file.originalname);
   }
 });
@@ -66,17 +65,15 @@ const upload = multer({ storage: storage });
 //Middleware to see how the params are populated by Passport
 let count = 1
 
-const printData = (req: Request, res:Response, next: NextFunction) => {
+const printData = (req, res, next) => {
     console.log("\n==============================")
     console.log(`------------>  ${count++}`)
 
     console.log(`req.body.username -------> ${req.body.username}`) 
     console.log(`req.body.password -------> ${req.body.password}`)
 
-    console.log(req.user)
-
     console.log(`\n req.session.passport -------> `)
-    console.log(req.session)
+    console.log(req.session.passport)
    
   
     console.log(`\n req.user -------> `) 
@@ -99,12 +96,12 @@ app.use(printData)
 
 // / Serve static files from the React frontend app
 // app.use('/downloads', express.static(path.join(new URL('.', import.meta.url).pathname, 'downloads')));
-function ensureAuthenticated(req : Request, res:Response, next : NextFunction) {
+function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     console.log(req.session)
       return next();
   }
-  res.status(401).send('Unauthorized');
+  return res.status(401).send('Unauthorized');
 }
 
 // API endpoint for uploading files
@@ -115,15 +112,15 @@ app.post('/upload', upload.single('file'),async (req, res) => {
     console.log("user iddddddddddddddd",id)
     const filename = req.file?.filename;
     const uploadTime = new Date();
-    const IPAddress = req.ip; // Get the client's IP address from the request
-    console.log(userId, filename, uploadTime, IPAddress);
+    // const IPAddress = req.ip; // Get the client's IP address from the request
+    console.log(userId, filename, uploadTime, ipAddress);
 
     // Create a new FileActivity record in the database
-    const newFileActivity = await db.fileactivity.create({
-      userId,
+    const newFileActivity = await db.fileActivity.create({
+      userId: id,
       uploadTime,
       filename,
-      IPAddress,
+      IPAddress : ipAddress,
     });
     // Log a message to indicate that the file was uploaded successfully
     console.log('File uploaded successfully');
@@ -189,14 +186,6 @@ app.post('/register', async (req, res) => {
     if (!username || !email || !password) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
-
-    const existingUser = await db.User.findOne({ where: { username } });
-
-    if (existingUser) {
-      // If user already exists, send response indicating user already exists
-      return res.status(400).json({ error: 'User already exists' });
-    }
-
     const hashedPassword = bcrypt.hashSync(password, 10);
     const newUser = await db.User.create({ username, password: hashedPassword, email }); // Use `create` instead of `createUser`
     res.status(201).json({ message: 'User registered successfully', user: newUser });
@@ -211,7 +200,8 @@ app.post('/register', async (req, res) => {
 app.post('/login', passport.authenticate('local'), async (req, res, next) => {
   // req.session.save()
   ipAddress = req.body.IPAddress;
-  const newUserActivity = await db.UserActivity.create({
+  id = req.user.username
+  const newUserActivity = await db.userActivity.create({
     userId: id,
     loginTime: new Date(),
     IPAddress: ipAddress,
@@ -231,17 +221,16 @@ app.post('/login', passport.authenticate('local'), async (req, res, next) => {
 
 
 // Logout route
-// Logout route
 app.get('/logout', async (req, res) => {
   try {
     // Find the user activity entry for the logged-in user and the current session
-    const userActivity = await db.UserActivity.findOne({
+    const userActivity = await db.userActivity.findOne({
       where: {
         userId: id, // Assuming req.user contains the logged-in user's information
         logoutTime: null // Assuming logoutTime is a field that indicates whether the user has already logged out
       }
     });
-
+console.log(userActivity)
     if (userActivity) {
       // Update the user activity entry with the logout time
       userActivity.logoutTime = new Date();
@@ -269,7 +258,7 @@ app.get('/logout', async (req, res) => {
 app.get('/files', async (req, res) => {
   try {
     // Query the database to get all files
-    const files = await db.FileActivity.findAll({where:{userId : id}});
+    const files = await db.fileActivity.findAll({where:{userId : id}});
     console.log(files)
 
     // If there are no files, return a 404 error
@@ -286,83 +275,6 @@ app.get('/files', async (req, res) => {
   }})
 
 
-  app.get('/users', async (req, res) => {
-    try {
-      const  username  = req.query.username;
-      console.log("1122220",username, req.query.username)
-      const newUser = await db.User.findOne({where: {username} }); // Use `create` instead of `createUser`
-      if(newUser === null){
-        // throw new Error('User Not Found !');
-        return res.status(404).json({ error: 'User Not Found !' });
-      }
-      return res.status(201).json({ message: 'User find successfully' , user: newUser });
-    } catch (error) {
-      console.error('Error finding user:', error);
-      return res.status(500).json({ error: 'User Not Found !' });
-    }
-    
-  })
-
-  app.delete('/users/:username', async (req, res) => {
-    try{
-      const  {username}  = req.params;
-      const newUser = await db.User.destroy({where: {username} }); // Use `create` instead of `createUser`
-      res.status(201).json({ message: 'User deleted successfully' , user: newUser });
-    }
-    catch (error){
-      console.error('Error finding user:', error);
-      res.status(404).json({ error: 'User Not Found !' });
-    }
-  })
-
-  // Define the route handler for updating a user
-app.put('/users/:username', async (req, res) => {
-  try {
-    const { username } = req.params;
-    console.log(username)
-    const {  password, email } = req.body;
-    console.log(email,username,password)
-
-    // Validate input to prevent SQL injection
-    // if (!newUsername || !newPassword || !newEmail) {
-    //   return res.status(400).json({ error: 'At least one field (username, password, email) must be provided for update' });
-    // }
-
-    // Construct the update object based on provided fields
-    const updateObject: UpdateUserObject = {};
-    if (username) updateObject['username'] = username;
-    if (password) updateObject['password'] = bcrypt.hashSync(password, 10);;
-    if (email) updateObject['email'] = email;
-
-    // Update the user in the database
-    const [updatedRowsCount] = await db.User.update(
-      updateObject,
-      { where: { username } }
-    );
-    console.log(updatedRowsCount, updateObject)
-    if (updatedRowsCount === 0) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    // Send a success response
-    return res.status(200).json({ message: 'User updated successfully' });
-  } catch (error) {
-    console.error('Error updating user:', error);
-    return res.status(500).json({ error: 'An error occurred while updating user' });
-  }
-});
-
-
-app.get('/users/role/:username', async (req, res) => {
-  try {
-    const { username } = req.params;
-    const users = await db.User.findOne({where: {username}});
-    res.json(users.role);
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    res.status(500).json({ error: 'An error occurred while fetching users' });
-  }
-})
 
 db.sequelize.sync().then(() =>{
   app.listen(port, () => {
