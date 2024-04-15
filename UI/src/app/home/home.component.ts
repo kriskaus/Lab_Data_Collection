@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UploadService } from '../services/upload.service';
 import { UserService } from '../services/user.service';
@@ -18,6 +18,9 @@ export class HomeComponent {
 
   constructor(private http: HttpClient, private uploadService: UploadService, private userService: UserService, private router: Router) {}
 
+  // ngOnInit(): void {
+      
+  // }
   onFileSelected(event: any) {
     if (event.target.files.length > 0) {
       this.selectedFile = event.target.files[0];
@@ -64,6 +67,7 @@ export class HomeComponent {
   this.userService.logoutUser()
   .subscribe({
       next : () => {
+        sessionStorage.setItem("isLogin", "false");
         this.router.navigate(["/login"])
           console.log('User logged out successfully');
           // Optionally, redirect to another page after successful logout

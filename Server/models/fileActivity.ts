@@ -22,7 +22,7 @@ export default (sequelize: Sequelize, DataTypes: any) => {
         // Define associations here if needed
         FileActivity.hasMany(models.User, {
             foreignKey: 'userId',
-            as: 'fileactivity', // Alias for the association
+            as: 'FileActivity', // Alias for the association
           });
     }
   }
@@ -49,7 +49,7 @@ export default (sequelize: Sequelize, DataTypes: any) => {
     },
   }, {
     sequelize: connection,
-    modelName: 'fileactivity',
+    modelName: 'FileActivity',
   });
 
   return FileActivity; // Ensure that FileActivity is returned as a constructor function

@@ -9,6 +9,7 @@ interface UserActivityAttributes {
 }
 // UserActivity model for storing login/logout activities
 export default (sequelize: Sequelize, DataTypes: any) => {
+
     class UserActivity extends Model<UserActivityAttributes> implements UserActivityAttributes {
         declare userId: number;
         declare loginTime: Date;
@@ -19,13 +20,13 @@ export default (sequelize: Sequelize, DataTypes: any) => {
             // Define associations here if needed
             UserActivity.hasMany(models.User, {
                 foreignKey: 'userId',
-                as: 'useractivity', // Alias for the association
+                as: 'UserActivity', // Alias for the association
               });}
     }
 
   UserActivity.init({
     userId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false,
     },
     loginTime: {
@@ -41,7 +42,8 @@ export default (sequelize: Sequelize, DataTypes: any) => {
     },
   }, {
     sequelize : connection,
-    modelName: 'useractivity',
+    modelName: 'UserActivity',
+    timestamps: false,
   });
 // Define associations
 

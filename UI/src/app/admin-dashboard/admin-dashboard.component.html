@@ -1,0 +1,62 @@
+<p-toast [showTransformOptions]="'translateY(100%)'" [showTransitionOptions]="'1000ms'" [hideTransitionOptions]="'1000ms'" [showTransformOptions]="'translateX(100%)'"></p-toast>
+
+<div>
+<h3>Add Student</h3>
+<label for="email">Email</label>
+<input type="text" placeholder="Email" name="email" id="eamilId" [(ngModel)]="email">
+
+<label for="username">Username</label>
+<input type="text" placeholder="Roll No." name="user" id="username" [(ngModel)]="username">
+
+<label for="password">Password</label>
+<input type="password" placeholder="Password" id="pssd" name="password" [(ngModel)]="password">
+
+
+<button type="button" pButton pRipple (click)="addUser(username, password, email)" label="Add" class="p-button-success"></button>
+
+</div>
+
+<div>
+    <h3>Delete Student</h3>
+    <label for="username">Username</label>
+    <input type="text" placeholder="Roll No." name="user" id="username" [(ngModel)]="username">    
+    <button pButton pRipple (click)="deleteUser(username)" class="p-button-success">Delete</button>
+</div>
+
+<div>
+    <h3>Update Student</h3>
+    
+    <label for="username">Username</label>
+    <input type="text" placeholder="Roll No." name="user" id="username" [(ngModel)]="username">
+
+    <label for="email">Email</label>
+    <input type="text" placeholder="Email" name="email" id="eamilId" [(ngModel)]="email">
+    
+    <label for="password">Password</label>
+    <input type="password" placeholder="Password" id="pssd" name="password" [(ngModel)]="password">
+    
+    <button pButton pRipple (click)="updateUser(username, password, email)" class="p-button-success">Update</button>
+</div>
+
+<div>
+    <h3>Find Student</h3>
+    
+    <label for="username">Username</label>
+    <input type="text" placeholder="Roll No." name="user" id="username" [(ngModel)]="username" >
+
+    <button pButton pRipple (click)= "findUser()" class="p-button-success">Find</button>
+
+<div>
+     UserName :{{users.user.username}}
+     Email :{{users.user.email}}
+     Password :{{users.user.password}}
+    
+</div>
+    </div>
+    <!-- <p-button label="Submit"></p-button> -->
+
+      
+  <div>
+    <h2>Log out</h2>
+    <button (click)="logout()">Logout</button>
+  </div>

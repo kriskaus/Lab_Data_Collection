@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FileTableComponent } from './file-table.component';
+import { AdminDashboardComponent } from './admin-dashboard.component';
 
-describe('FileTableComponent', () => {
-  let component: FileTableComponent;
-  let fixture: ComponentFixture<FileTableComponent>;
+describe('AdminDashboardComponent', () => {
+  let component: AdminDashboardComponent;
+  let fixture: ComponentFixture<AdminDashboardComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [FileTableComponent]
+      declarations: [AdminDashboardComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(FileTableComponent);
+    fixture = TestBed.createComponent(AdminDashboardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
