@@ -11,17 +11,27 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { HomeComponent } from './home/home.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClient, HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
+import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
 import { UploadService } from './services/upload.service';
 import { UserService } from './services/user.service';
+import { AdminService } from './services/admin.service';
 import { RegisterComponent } from './register/register.component';
-
+import { FileTableComponent } from './file-table/file-table.component';
+import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
+import { RippleModule } from 'primeng/ripple';
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     HomeComponent,
-    RegisterComponent
+    RegisterComponent,
+    FileTableComponent,
+    AdminDashboardComponent
   ],
   imports: [
     BrowserModule,
@@ -32,14 +42,22 @@ import { RegisterComponent } from './register/register.component';
     HttpClientModule,
     ReactiveFormsModule,
     MatProgressBar,
-    MatIcon
+    MatIcon,
+    MatSnackBarModule,
+    BrowserAnimationsModule,
+    ToastModule,
+    ButtonModule,
+    RippleModule
   ],
   providers: [
     provideClientHydration(),
     provideHttpClient(),
     UploadService,
     UserService,
-    provideHttpClient(withFetch())
+    provideHttpClient(withFetch()),
+    MessageService,
+    AdminService
+    
   ],
   bootstrap: [AppComponent],
   exports: [
@@ -47,7 +65,10 @@ import { RegisterComponent } from './register/register.component';
     MatInputModule,
     MatFormFieldModule,
     MatProgressBar,
-    MatIcon
+    MatIcon,
+    ToastModule,
+    ButtonModule,
+    RippleModule,
 
 
 ]

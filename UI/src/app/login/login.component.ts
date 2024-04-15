@@ -21,11 +21,13 @@ public submit() {
     this.userService.loginUser(this.username, this.password)
     .subscribe({
         next: () => {
-          this.router.navigate(["/home"])
+          sessionStorage.setItem('isLogin', "true");
+          this.router.navigate(["/admin"])
             console.log('User logged in successfully');
             // Optionally, redirect to another page after successful login
         },
         error: (error) => {
+          sessionStorage.setItem('isLogin', "false");
             console.error('Login failed:', error);
         }
       }

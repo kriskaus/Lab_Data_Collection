@@ -2,24 +2,23 @@
 
 import { Model } from 'sequelize';
 import connection from '../config/dbConnect'
- interface UserAttributes{
-  username: string;
-  password: string;
-  email:string;
- }
+import { UserAttributes } from '../interface/UserAttributes';
+ 
 
 export default (sequelize:any, DataTypes:any) => {
   class User extends Model<UserAttributes> 
     implements UserAttributes{
-    public username!: string; // Note that the `null assertion` `!` is required
-    public password!: string;
-    public email!: string;
+    declare username: string; // Note that the `null assertion` `!` is required
+    declare password: string;
+    declare email: string;
+    declare id: number;
+    declare role: string
 
-    static async createUser(username: string, email: string, password: string): Promise<User> {
-      // Use the Sequelize create method to insert a new record into the database
-      const newUser = await User.create({ username, email, password });
-      return newUser;
-    }
+    // static async createUser(username: string, email: string, password: string): Promise<User> {
+    //   // Use the Sequelize create method to insert a new record into the database
+    //   const newUser = await User.create({ username, email, password });
+    //   return newUser;
+    // }
 
 
     static associate(models :any) {
@@ -27,9 +26,25 @@ export default (sequelize:any, DataTypes:any) => {
       User.belongsToMany(models.Project,{
         through: 'ProjectAssignments'
       })
+
+      User.hasMany(models.UserActivity, {
+        foreignKey: 'userId',
+        as: 'user',
+      })
+
+      User.hasMany(models.FileActivity, {
+        foreignKey: 'userId',
+        as: 'user',
+      })
     }
   }
   User.init({
+    id:{
+      type:DataTypes.INTEGER,
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     username: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -39,6 +54,10 @@ export default (sequelize:any, DataTypes:any) => {
       allowNull: false,
     },
     email:{
+      type:DataTypes.STRING,
+      allowNull:false,
+    },
+    role:{
       type:DataTypes.STRING,
       allowNull:false,
     }

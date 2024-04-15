@@ -2,23 +2,26 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Users', {
+    await queryInterface.createTable('FileActivities', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      username: {
+      userId: {
         type: Sequelize.STRING
       },
-      password: {
+      uploadTime: {
         type: Sequelize.STRING
       },
-      email:{
+      downloadTime: {
         type: Sequelize.STRING
       },
-      role:{
+      filename: {
+        type: Sequelize.STRING
+      },
+      IPAddress: {
         type: Sequelize.STRING
       },
       createdAt: {
@@ -32,6 +35,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Users');
+    await queryInterface.dropTable('FileActivities');
   }
 };

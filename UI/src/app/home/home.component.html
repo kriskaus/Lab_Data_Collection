@@ -4,11 +4,13 @@
     <button (click)="uploadFile()" *ngIf="selectedFile">Upload</button>
   </div>
   
-  <div class="download-section">
+  <!-- <div class="download-section">
     <h2>Download File</h2>
     <button (click)="downloadFile(selectedFile?.name)">Download</button>
     <span *ngIf="selectedFile">{{ selectedFile.name }}</span>
-  </div>
+  </div> -->
+
+  <app-file-table></app-file-table>
   
   <div>
     <h2>Log out</h2>

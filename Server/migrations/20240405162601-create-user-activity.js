@@ -3,7 +3,8 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-     await queryInterface.createTable('FileActivity', {
+    await queryInterface.createTable('UserActivities', {
+
         id: {
           allowNull: false,
           autoIncrement: true,
@@ -11,25 +12,22 @@ module.exports = {
           type: Sequelize.INTEGER
         },
         userId: {
-          type: Sequelize.INTEGER
-        },
-        uploadTime: {
-          type: Sequelize.DATE
-        },
-        downloadTime: {
-          type: Sequelize.DATE
-        },
-        filename: {
           type: Sequelize.STRING
+        },
+        loginTime: {
+          type: Sequelize.DATE
+        },
+        logoutTime: {
+          type: Sequelize.DATE
         },
         IPAddress: {
           type: Sequelize.STRING
-      }
-    });
+        }
+      
+    })
   },
 
   async down (queryInterface, Sequelize) {
-     await queryInterface.dropTable('users');
-     
+     await queryInterface.dropTable('UserActivities');
   }
 };
