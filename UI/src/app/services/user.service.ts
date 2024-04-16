@@ -14,8 +14,8 @@ export class UserService {
 
   constructor( private http: HttpClient) { }
 
-public registerUser(email: string, username: string, password: string,) {
-    return this.http.post(`${Info.ServerUrl}/register`,{ username, password, email });
+public registerUser(email: string, username: string, password: string, role:string) {
+    return this.http.post(`${Info.ServerUrl}/register`,{ username, password, email, role });
 }
 
 public loginUser(username: string, password: string) {

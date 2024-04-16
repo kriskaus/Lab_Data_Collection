@@ -2,7 +2,7 @@ import express, { Express, NextFunction, Request, Response } from "express";
 import session from 'express-session'
 import cors from "cors";
 import multer from 'multer';
-import path from "path";
+import path, { resolve } from "path";
 import fs from 'fs';
 import passport from 'passport';
 import bcrypt from 'bcryptjs';
@@ -119,7 +119,7 @@ app.post('/upload', upload.single('file'),async (req, res) => {
     console.log(userId, filename, uploadTime, IPAddress);
 
     // Create a new FileActivity record in the database
-    const newFileActivity = await db.fileactivity.create({
+    const newFileActivity = await db.FileActivity.create({
       userId,
       uploadTime,
       filename,
@@ -149,7 +149,7 @@ app.get('/download/:filename', async (req, res) => {
   if (fs.existsSync(filePath)) {
     try {
         // Find the user activity entry for the logged-in user and the current session
-        const fileActivity = await db.fileActivity.findOne({
+        const fileActivity = await db.FileActivity.findOne({
           where: {
             userId: id,
             filename:filename, // Assuming req.user contains the logged-in user's information
@@ -185,8 +185,8 @@ app.get('/download/:filename', async (req, res) => {
 // Register user route
 app.post('/register', async (req, res) => {
   try {
-    const { username, password, email } = req.body;
-    if (!username || !email || !password) {
+    const { username, password, email, role } = req.body;
+    if (!username || !email || !password || !role) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -198,7 +198,7 @@ app.post('/register', async (req, res) => {
     }
 
     const hashedPassword = bcrypt.hashSync(password, 10);
-    const newUser = await db.User.create({ username, password: hashedPassword, email }); // Use `create` instead of `createUser`
+    const newUser = await db.User.create({ username, password: hashedPassword, email, role }); // Use `create` instead of `createUser`
     res.status(201).json({ message: 'User registered successfully', user: newUser });
   } catch (error) {
     console.error('Error registering user:', error);

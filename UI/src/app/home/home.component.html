@@ -1,18 +1,13 @@
-<div class="upload-section">
-    <h2>Upload File</h2>
-    <input type="file" (change)="onFileSelected($event)" />
-    <button (click)="uploadFile()" *ngIf="selectedFile">Upload</button>
+<div class="main-box">
+  <div class="center-box">
+    <h1 class="heading">Upload and Download File</h1>
+    <div class="inner-box">
+      <h2 class="sub-heading">Upload File</h2>
+      <input type="file" class="upload-input" (change)="onFileSelected($event)" />
+      <button class="upload-button" (click)="uploadFile()" *ngIf="selectedFile">Upload</button>
+    </div>
+    <app-file-table></app-file-table>
+    <button class="logout-button" (click)="logout()">Logout</button>
   </div>
-  
-  <!-- <div class="download-section">
-    <h2>Download File</h2>
-    <button (click)="downloadFile(selectedFile?.name)">Download</button>
-    <span *ngIf="selectedFile">{{ selectedFile.name }}</span>
-  </div> -->
+</div>
 
-  <app-file-table></app-file-table>
-  
-  <div>
-    <h2>Log out</h2>
-    <button (click)="logout()">Logout</button>
-  </div>

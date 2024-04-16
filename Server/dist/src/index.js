@@ -99,7 +99,7 @@ app.post('/upload', upload.single('file'), (req, res) => __awaiter(void 0, void 
         const IPAddress = req.ip; // Get the client's IP address from the request
         console.log(userId, filename, uploadTime, IPAddress);
         // Create a new FileActivity record in the database
-        const newFileActivity = yield models_1.default.fileactivity.create({
+        const newFileActivity = yield models_1.default.FileActivity.create({
             userId,
             uploadTime,
             filename,
@@ -126,7 +126,7 @@ app.get('/download/:filename', (req, res) => __awaiter(void 0, void 0, void 0, f
     if (fs_1.default.existsSync(filePath)) {
         try {
             // Find the user activity entry for the logged-in user and the current session
-            const fileActivity = yield models_1.default.fileActivity.findOne({
+            const fileActivity = yield models_1.default.FileActivity.findOne({
                 where: {
                     userId: id,
                     filename: filename,
@@ -162,8 +162,8 @@ app.get('/download/:filename', (req, res) => __awaiter(void 0, void 0, void 0, f
 // Register user route
 app.post('/register', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { username, password, email } = req.body;
-        if (!username || !email || !password) {
+        const { username, password, email, role } = req.body;
+        if (!username || !email || !password || !role) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
         const existingUser = yield models_1.default.User.findOne({ where: { username } });
@@ -172,7 +172,7 @@ app.post('/register', (req, res) => __awaiter(void 0, void 0, void 0, function* 
             return res.status(400).json({ error: 'User already exists' });
         }
         const hashedPassword = bcryptjs_1.default.hashSync(password, 10);
-        const newUser = yield models_1.default.User.create({ username, password: hashedPassword, email }); // Use `create` instead of `createUser`
+        const newUser = yield models_1.default.User.create({ username, password: hashedPassword, email, role }); // Use `create` instead of `createUser`
         res.status(201).json({ message: 'User registered successfully', user: newUser });
     }
     catch (error) {

@@ -1,15 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attractive Table</title>
+<style>
+  /* Style for table */
+  /* Style for table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 2px solid #050505; /* Border around the table */
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 2px solid #161616; /* Border between rows */
+  border-right: 2px solid #141414; /* Border between cells */
+}
+
+th {
+  background-color: #f2f2f2;
+  color: #333;
+  border-top: 2px solid #161616; /* Top border for header */
+  border-right: 2px solid #111010; /* Right border for header */
+}
+
+/* Style for download button */
+.download-button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.download-button:hover {
+  background-color: #45a049;
+}
+
+</style>
+</head>
+<body>
+
 <table>
-    <thead>
-      <tr>
-        <th>Filename</th>
-        <th>Download</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let file of files">
-        <td>{{ file.filename }}</td>
-        <td><button (click)="downloadFile(file.filename)">Download</button></td>
-      </tr>
-    </tbody>
-  </table>
-  
+  <thead>
+    <tr>
+      <th>Filename</th>
+      <th>Download</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let file of files">
+      <td>{{ file.filename }}</td>
+      <td><button class="download-button" (click)="downloadFile(file.filename)">Download</button></td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>

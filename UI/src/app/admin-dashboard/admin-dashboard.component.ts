@@ -16,6 +16,7 @@ export class AdminDashboardComponent {
  public username = "";
  public password = "";
  public email = "";
+ public role ="";
  
  users:any;
 
@@ -56,8 +57,8 @@ export class AdminDashboardComponent {
 }
 
 
- public addUser(username: string, password: string, email: string) {
-  this.userService.registerUser(email, username, password).subscribe({
+ public addUser(username: string, password: string, email: string, role:string) {
+  this.userService.registerUser(email, username, password, role).subscribe({
     next: (data) => {
       console.log(data);
 
@@ -113,6 +114,10 @@ public logout() {
           console.error('Logout failed:', error);
       }
     });
+ }
+
+ public showDetails(){
+
  }
 
 }

@@ -11,13 +11,14 @@ export class RegisterComponent {
   public username!: string;
   public password!: string;
   public email! : string;
+  public role!: string;
 
   constructor(private router: Router, private userService: UserService) { }
   public submit() {
     // if(this.username === "user" &&  this.password === "pass"){
     //   console.warn("success!!")
   
-    this.userService.registerUser(this.email, this.username, this.password )
+    this.userService.registerUser(this.email, this.username, this.password,this.role )
       .subscribe({
            next: () => {
             // this.router.navigate(["/login"])
