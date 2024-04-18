@@ -1,25 +1,28 @@
 <div class="main-box">
   <div class="center-box">
     <h1 class="heading">Upload and Download File</h1>
-    <div class="inner-box">
-      <h2 class="sub-heading">Upload File</h2>
-      <input type="file" class="upload-input" (change)="onFileSelected($event)" />
-      <button class="upload-button" (click)="uploadFile(selectedFile)" *ngIf="selectedFile">Upload</button>
-    </div>
+    <!-- <div class="file-upload-container">
+      <mat-form-field appearance="fill">
+         <mat-label>Upload File</mat-label>
+         <input matInput type="file" (change)="onFileSelected($event)">
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="uploadFile(selectedFile)" *ngIf="selectedFile">Upload</button>
+     </div> -->
 
     
     <div class="card flex justify-content-center">
       <p-toast></p-toast>
-      <p-fileUpload name="file[]" url="" (onUpload)="onUpload($event)" [multiple]="true" accept="image/*" maxFileSize="1000000">
+      <p-fileUpload name="file[]"  (onSelect)="onUpload($event)" auto="false" accept="image/*" showUploadButton="false">
           <ng-template pTemplate="content">
               <ul *ngIf="uploadedFiles.length">
                   <li *ngFor="let file of uploadedFiles">{{ file.name }} - {{ file.size }} bytes</li>
               </ul>
           </ng-template>
       </p-fileUpload>
+      <button pButton icon="pi pi-upload" label="Upload" (click)="uploadFile()" class=" flex h-2rem align-self-end ml-6 pr-3 "></button>
     </div>
     <!-- <app-file-table></app-file-table> -->
-    <div>
+    <!-- <div>
       <table>
         <thead>
           <tr>
@@ -33,10 +36,43 @@
             <td><button class="download-button" (click)="downloadFile(file.filename)">Download</button></td>
           </tr>
         </tbody>
-      </table>
+      </table> -->
+      <div class=" mt-5 card ">
+        <p-table [value]="files" [(selection)]="selectedFile" selectionMode="single" [tableStyle]="{'min-width': '40rem'}" dataKey="id"
+        [rows]="10"
+        [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [paginator]="true">
+            <ng-template pTemplate="caption">
+                <div class="flex align-items-center justify-content-between">
+                    <h1>Upload and Download File</h1>
+                </div>
+                
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Filename</th>
+                    <th>Download</th>
+                    <!-- <th>Email ID</th>
+                    <th>Password</th>
+                    <th>Role</th> -->
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-file>
+                <tr [pSelectableRow]="file">
+                    <td>{{file.filename}}</td>
+                    <td> <button class="logout-button" (click)="downloadFile(file.filename)" >Download</button></td>
+                    <!-- <td>{{user.email}}</td>
+                    <td>{{user.password}}</td>
+                    <td>{{user.role}}</td> -->
+                </tr>
+            </ng-template>
+        </p-table>
+        </div>
       
     </div>
     <button class="logout-button" (click)="logout()">Logout</button>
   </div>
-</div>
+<!-- </div> -->
 

@@ -36,18 +36,19 @@ export class HomeComponent {
     }
   }
 
-  public uploadFile(file:File) {
-    // if (!this.selectedFile) {
-    //   return;
-    // }
+  public uploadFile() {
+    if (!this.selectedFile) {
+      return;
+    }
 
     const formData = new FormData();
     // formData.append('file', this.selectedFile, this.selectedFile.name);
-    formData.append('file', file, file.name);
+    formData.append('file', this.selectedFile, this.selectedFile.name);
     this.uploadService.uploadfile(formData).subscribe({
       next: () => {
         this.getAllFiles();
         console.log('file uploaded successfully');
+        this.messageService.add({severity: 'info', summary: 'File Uploaded', detail: ''});
        
       },
       error: (err) => {
@@ -100,20 +101,24 @@ public getAllFiles(){
 });
 }
  
-onUpload($event:FileUploadEvent) {
+onUpload(event:any) {
   // for(let file of event.files) {
       // this.uploadedFiles.push(file);
-      console.log('Upload event triggered:', $event);
+      console.log('Upload event triggered:', event);
   //     for(let file of event.files) {
   //       console.log('Uploading file:', file);
   //       this.uploadFile(file);
   // }
-  const file = $event.files[0];
+//   for(let file of event.files) {
+//     this.uploadedFiles.push(file);
+// }
+      this.selectedFile = event.files[0];
+  // this.uploadFile(event.files[0]);
   
-  if(file){
-    this.uploadFile(file)
-  }
+  // if(file){
+  //   this.uploadFile(file)
+  // }
 
-  this.messageService.add({severity: 'info', summary: 'File Uploaded', detail: ''});
+  // this.messageService.add({severity: 'info', summary: 'File Uploaded', detail: ''});
 }
 }
