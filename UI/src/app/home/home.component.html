@@ -4,9 +4,38 @@
     <div class="inner-box">
       <h2 class="sub-heading">Upload File</h2>
       <input type="file" class="upload-input" (change)="onFileSelected($event)" />
-      <button class="upload-button" (click)="uploadFile()" *ngIf="selectedFile">Upload</button>
+      <button class="upload-button" (click)="uploadFile(selectedFile)" *ngIf="selectedFile">Upload</button>
     </div>
-    <app-file-table></app-file-table>
+
+    
+    <div class="card flex justify-content-center">
+      <p-toast></p-toast>
+      <p-fileUpload name="file[]" url="" (onUpload)="onUpload($event)" [multiple]="true" accept="image/*" maxFileSize="1000000">
+          <ng-template pTemplate="content">
+              <ul *ngIf="uploadedFiles.length">
+                  <li *ngFor="let file of uploadedFiles">{{ file.name }} - {{ file.size }} bytes</li>
+              </ul>
+          </ng-template>
+      </p-fileUpload>
+    </div>
+    <!-- <app-file-table></app-file-table> -->
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th>Filename</th>
+            <th>Download</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let file of files">
+            <td>{{ file.filename }}</td>
+            <td><button class="download-button" (click)="downloadFile(file.filename)">Download</button></td>
+          </tr>
+        </tbody>
+      </table>
+      
+    </div>
     <button class="logout-button" (click)="logout()">Logout</button>
   </div>
 </div>

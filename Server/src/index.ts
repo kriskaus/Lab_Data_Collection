@@ -32,11 +32,11 @@ app.use(session({
 }));
 // Initialize Passport.js middleware
 app.use(passport.initialize());
-app.use(passport.authenticate('session'));
+app.use(passport.session());
 PassportInitialize(passport);
 
 let id="";
-let ipAddress ;
+let ipAddress:string ;
 
 // Configure Passport.js
 
@@ -115,7 +115,7 @@ app.post('/upload', upload.single('file'),async (req, res) => {
     console.log("user iddddddddddddddd",id)
     const filename = req.file?.filename;
     const uploadTime = new Date();
-    const IPAddress = req.ip; // Get the client's IP address from the request
+    const IPAddress = ipAddress; // Get the client's IP address from the request
     console.log(userId, filename, uploadTime, IPAddress);
 
     // Create a new FileActivity record in the database
@@ -210,6 +210,8 @@ app.post('/register', async (req, res) => {
 // Login route
 app.post('/login', passport.authenticate('local'), async (req, res, next) => {
   // req.session.save()
+  id = req.body.username
+  console.log(req)
   ipAddress = req.body.IPAddress;
   const newUserActivity = await db.UserActivity.create({
     userId: id,
@@ -230,7 +232,6 @@ app.post('/login', passport.authenticate('local'), async (req, res, next) => {
   });
 
 
-// Logout route
 // Logout route
 app.get('/logout', async (req, res) => {
   try {
@@ -265,7 +266,7 @@ app.get('/logout', async (req, res) => {
   }
 });
 
-
+// Get All Files
 app.get('/files', async (req, res) => {
   try {
     // Query the database to get all files
@@ -285,7 +286,7 @@ app.get('/files', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching files' });
   }})
 
-
+// Find User
   app.get('/users', async (req, res) => {
     try {
       const  username  = req.query.username;
@@ -303,6 +304,7 @@ app.get('/files', async (req, res) => {
     
   })
 
+  // Delete User
   app.delete('/users/:username', async (req, res) => {
     try{
       const  {username}  = req.params;
@@ -315,24 +317,18 @@ app.get('/files', async (req, res) => {
     }
   })
 
-  // Define the route handler for updating a user
+  // Route for updating a user
 app.put('/users/:username', async (req, res) => {
   try {
     const { username } = req.params;
     console.log(username)
-    const {  password, email } = req.body;
-    console.log(email,username,password)
-
-    // Validate input to prevent SQL injection
-    // if (!newUsername || !newPassword || !newEmail) {
-    //   return res.status(400).json({ error: 'At least one field (username, password, email) must be provided for update' });
-    // }
-
-    // Construct the update object based on provided fields
+    const {  password, email, role } = req.body;
+    console.log(email,username,password, role)
     const updateObject: UpdateUserObject = {};
     if (username) updateObject['username'] = username;
     if (password) updateObject['password'] = bcrypt.hashSync(password, 10);;
     if (email) updateObject['email'] = email;
+    if (role) updateObject['role'] = role;
 
     // Update the user in the database
     const [updatedRowsCount] = await db.User.update(
@@ -352,7 +348,7 @@ app.put('/users/:username', async (req, res) => {
   }
 });
 
-
+// Finding User Role
 app.get('/users/role/:username', async (req, res) => {
   try {
     const { username } = req.params;
@@ -364,8 +360,42 @@ app.get('/users/role/:username', async (req, res) => {
   }
 })
 
+app.get('/all', async (req, res) => {
+  try {
+    const users = await db.User.findAll();
+    res.json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ error: 'An error occurred while fetching users' });
+  }
+
+})
+
+app.get('/users/activity', async (req, res) => {
+  try {
+    const files = await db.UserActivity.findAll();
+    res.json(files);
+  } catch (error) {
+    console.error('Error fetching files:', error);
+    res.status(500).json({ error: 'An error occurred while fetching files' });
+  }
+})
+
+app.get('/files/activity', async (req, res) => {
+  try {
+    const files = await db.FileActivity.findAll();
+    res.json(files);
+  } catch (error) {
+    console.error('Error fetching files:', error);
+    res.status(500).json({ error: 'An error occurred while fetching files' });
+  }
+  
+})
+
 db.sequelize.sync().then(() =>{
   app.listen(port, () => {
     console.log(`Server is running on port  http://localhost:${port}`);
   });
 })
+// Create a ;local storage having field isLogin, make this login as true , make the expiration time as 5 minutes after which the isLogin will be false
+// 

@@ -1,0 +1,40 @@
+<p-toast [showTransformOptions]="'translateY(100%)'" [showTransitionOptions]="'1000ms'" [hideTransitionOptions]="'1000ms'" [showTransformOptions]="'translateX(100%)'"></p-toast>
+<form (ngSubmit)="addUser()">
+    <button mat-icon-button style="float: right;margin:5px" mat-dialog-close >
+        <mat-icon>close</mat-icon>
+    </button>
+    <mat-dialog-content class="flex flex-column pl-8 pr-8 py-5 gap-4 w-full">
+        <header>
+            <h1>Add User</h1>
+        </header>
+        <mat-form-field >
+            <mat-label>Username</mat-label>
+            <input matInput placeholder="UserName" [(ngModel)]="username" name="username">
+        </mat-form-field>
+       
+        <mat-form-field>
+            <mat-label>Email</mat-label>
+            <input matInput [(ngModel)]="email" name="email">
+        </mat-form-field>
+       
+        <mat-form-field>
+            <mat-label>Password</mat-label>
+            <input matInput [(ngModel)]="password" name="password">
+        </mat-form-field>
+       
+        <mat-form-field>
+            <mat-label>Role</mat-label>
+            <!-- <input matInput type="text" [(ngModel)]="role" name="role"> -->
+            <mat-select [(ngModel)]="role" name="role">
+                  <mat-option value="admin">Admin</mat-option>
+                  <mat-option value="user">User</mat-option>
+              </mat-select>
+        </mat-form-field>
+    </mat-dialog-content>
+    
+    <mat-dialog-actions align="end">
+        <button mat-raised-button color="primary">Submit</button>
+        <button mat-raised-button color="warn" mat-dialog-close >Close</button>
+    </mat-dialog-actions>
+    
+</form>

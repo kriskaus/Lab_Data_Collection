@@ -1,9 +1,16 @@
-<p-toast [showTransformOptions]="'translateY(100%)'" [showTransitionOptions]="'1000ms'" [hideTransitionOptions]="'1000ms'" [showTransformOptions]="'translateX(100%)'"></p-toast>
 <div class="body">
 <div class="admin-container">
+<p-toast [showTransformOptions]="'translateY(100%)'" [showTransitionOptions]="'1000ms'" [hideTransitionOptions]="'1000ms'" [showTransformOptions]="'translateX(100%)'"></p-toast>
+
     <div class="button-container">
+      <p-button label="Primary" [raised]="true"></p-button>
+      <p-button type="button"  pRipple (click)="showDetails()" label="Details" styleClass="p-button-success" severity="success"></p-button>
+      <p-button type="button"  pRipple (click)="back()" label="Back" styleClass="p-button-success"></p-button>
+      <p-button type="button"  pRipple (click)="logout()" label="Logout" ngClass="p-button-error"></p-button>
+
+        <button (click)="showDetails()" class="details-btn">Details</button>
+        <button (click)="back()" class="details-btn">back</button>
         <button (click)="logout()" class="logout-btn">Logout</button>
-        <button (click)="showDetails" class="details-btn">Details</button>
       </div>
 <!-- <div>
 <h3>Add Student</h3>
@@ -16,12 +23,16 @@
 <label for="password">Password</label>
 <input type="password" placeholder="Password" id="pssd" name="password" [(ngModel)]="password">
 
+<label for="role">Role</label>
+<input type="text" placeholder="Role" id="role" name="role" [(ngModel)]="role">
 
-<button type="button" pButton pRipple (click)="addUser(username, password, email)" label="Add" class="p-button-success"></button>
+
+
+<button type="button" pButton pRipple (click)="addUser(username, password, email, role )" label="Add" class="p-button-success"></button>
 
 </div> -->
-
-
+<app-details-page *ngIf="show"></app-details-page>
+<div *ngIf="hide">
 <div class="dashboard-section">
     <h3>Add Student</h3>
     <form >
@@ -85,7 +96,10 @@
       <label for="updatePassword">Password</label>
       <input type="password" placeholder="Password" name="pssd" id="updatePassword" [(ngModel)]="password">
 
-      <button type="button" pButton pRipple (click)="updateUser(username, password, email)" label="Update" class="p-button-success">Update</button>
+      <label for="role">Role</label>
+      <input type="role" placeholder="Role" id="role" name="role" [(ngModel)]="role">
+
+      <button type="button" pButton pRipple (click)="updateUser(username, password, email, role)" label="Update" class="p-button-success">Update</button>
     </form>
   </div>
 
@@ -129,3 +143,5 @@
     <h2>Log out</h2>
     <button (click)="logout()">Logout</button>
   </div> -->
+
+</div>

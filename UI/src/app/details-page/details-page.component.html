@@ -1,0 +1,112 @@
+<div class="bg-gray-600">
+    <button pButton type="button"  pRipple (click)="logout()" label="Logout" class="p-button-danger mt-3 justify-content-end" style="position: relative; left: 90%;"  ></button>
+    <div class=" mt-5 card ">
+        <p-table [value]="user" [(selection)]="selectedUser" selectionMode="single" [tableStyle]="{'min-width': '40rem'}" dataKey="id"
+        [rows]="10"
+        [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [paginator]="true">
+            <ng-template pTemplate="caption">
+                <div class="flex align-items-center justify-content-between">
+                    <h1>User</h1>
+                    <div class="flex gap-3">
+                        <button pButton type="button" pRipple (click)="dialogService.openAddUserDialog()" label="Add"></button>
+                        <button pButton type="button" pRipple (click)="dialogService.openDeleteUserDialog()" label="Delete"></button>
+                        <button pButton type="button" pRipple (click)="dialogService.openUpdateUserDialog()" label="Update"></button>
+                        <button pButton type="button" pRipple (click)="dialogService.openFindUserDialog()" label="Find"></button>
+                        <p-button icon="pi pi-refresh" (click)="refresh()"></p-button>
+                    </div>
+                </div>
+                
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Id</th>
+                    <th>Username</th>
+                    <th>Email ID</th>
+                    <th>Password</th>
+                    <th>Role</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-user>
+                <tr [pSelectableRow]="user">
+                    <td>{{user.id}}</td>
+                    <td>{{user.username}}</td>
+                    <td>{{user.email}}</td>
+                    <td>{{user.password}}</td>
+                    <td>{{user.role}}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+        </div>
+        <div class="mt-5 p-5 card" >
+        <p-table [value]="userActivity" [(selection)]="selectedUser" selectionMode="single" [tableStyle]="{'min-width': '50rem'}" dataKey="id"
+        [rows]="10"
+        [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [paginator]="true">
+            <ng-template pTemplate="caption">
+                <div class="flex align-items-center justify-content-between">
+                    User Activity
+                    <p-button icon="pi pi-refresh" (click)="refresh()"></p-button>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Id</th>
+                    <th>Username</th>
+                    <th>Login Time</th>
+                    <th>Logout Time</th>
+                    <th>IP Address</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-user>
+                <tr [pSelectableRow]="user">
+                    <td>{{user.id}}</td>
+                    <td>{{user.userId}}</td>
+                    <td>{{user.loginTime}}</td>
+                    <td>{{user.logoutTime}}</td>
+                    <td>{{user.IPAddress}}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+        </div>
+        
+        <div class="mt-5 p-5 card">
+        <p-table [value]="filesActivity" [(selection)]="selectedUser" selectionMode="single" [tableStyle]="{'min-width': '50rem'}" dataKey="id"
+        [rows]="10"
+        [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [paginator]="true">
+            <ng-template pTemplate="caption">
+                <div class="flex align-items-center justify-content-between">
+                    File Activity
+                    <p-button icon="pi pi-refresh" (click)="refresh()"></p-button>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Id</th>
+                    <th>Username</th>
+                    <th>Filename</th>
+                    <th>Upload Time</th>
+                    <th>Download Time</th>
+                    <th>IP Address</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-file>
+                <tr [pSelectableRow]="file">
+                    <td>{{file.id}}</td>
+                    <td>{{file.userId}}</td>
+                    <td>{{file.filename}}</td>
+                    <td>{{file.uploadTime}}</td>
+                    <td>{{file.downloadTime}}</td>
+                    <td>{{file.IPAddress}}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+        </div>
+</div>

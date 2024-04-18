@@ -21,9 +21,21 @@ export class AdminService {
     return this.Http.delete(`${Info.ServerUrl}/users/${username}`);
   }
 
-  public UpdateUser(username: string, password: string, email: string) {
-    return this.Http.put(`${Info.ServerUrl}/users/${username}`, { username, password, email });
+  public UpdateUser(username: string, password: string, email: string, role:string) {
+    return this.Http.put(`${Info.ServerUrl}/users/${username}`, { username, password, email, role });
   }
 
+  public getAllUsers(){
+    return this.Http.get<any[]>(`${Info.ServerUrl}/all`);
+  }
+
+
+  public getAllUserActivity(){
+    return this.Http.get<any[]>(`${Info.ServerUrl}/users/activity`);
+  }
+
+  public getAllFileActivity(){
+    return this.Http.get<any[]>(`${Info.ServerUrl}/files/activity`);
+  }
 
 }

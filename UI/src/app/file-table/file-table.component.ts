@@ -16,13 +16,13 @@ export class FileTableComponent  {
   public ngOnInit(): void {
     // Retrieve file information from the backend
     this.uploadService.getAllFiles().subscribe({
-        next :(data: any[]) => {
-        this.files = data;
-          },
-        error: (error) => {
-        console.error('Failed to retrieve files:', error);
-      }
-  });
+      next :(data: any[]) => {
+      this.files = data;
+        },
+      error: (error) => {
+      console.error('Failed to retrieve files:', error);
+    }
+});
   }
 
   ngOnChanges(): void {

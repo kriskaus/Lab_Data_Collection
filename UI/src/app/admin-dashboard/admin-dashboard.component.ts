@@ -18,7 +18,9 @@ export class AdminDashboardComponent {
  public email = "";
  public role ="";
  
- users:any;
+ users:any; 
+ show: boolean = false;
+ hide: boolean= true;
 
  constructor( private userService: UserService, private adminService: AdminService,
               private messageService: MessageService, private router: Router) {}
@@ -37,8 +39,8 @@ export class AdminDashboardComponent {
   });
  }
 
- public updateUser(username: string, password: string, email: string): void {
-  this.adminService.UpdateUser(username, password, email).subscribe({
+ public updateUser(username: string, password: string, email: string, role:string): void {
+  this.adminService.UpdateUser(username, password, email, role).subscribe({
     next: (data: any) => {
       console.log(data);
       if (data.message === 'User updated successfully') {
@@ -117,7 +119,14 @@ public logout() {
  }
 
  public showDetails(){
+  this.show = true
+  this.hide = false
+  // this.router.navigate(["/details"])
+ }
 
+ public back(){
+  this.show = false;
+  this.hide =true;
  }
 
 }

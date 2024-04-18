@@ -1,9 +1,14 @@
 export interface Users {
-    user: {
+        id: number;
         username: string;
         password: string;
         email: string;
-        ipAdrress?: string;
-      };
-      message: string;
+        role: string;
+        logoutTime: Date;
+        loginTime: Date;
+        IPAddress: string;
+        filename: string;
+        uploadTime: Date;
+        downloadTime: Date;
+
 }
