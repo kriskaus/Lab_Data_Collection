@@ -1,5 +1,5 @@
 <p-toast [showTransformOptions]="'translateY(100%)'" [showTransitionOptions]="'1000ms'" [hideTransitionOptions]="'1000ms'" [showTransformOptions]="'translateX(100%)'"></p-toast>
-<form (ngSubmit)="addUser()">
+<form >
     <button mat-icon-button style="float: right;margin:5px" mat-dialog-close >
         <mat-icon>close</mat-icon>
     </button>
@@ -30,10 +30,24 @@
                   <mat-option value="user">User</mat-option>
               </mat-select>
         </mat-form-field>
+
+     
+
+      <p-fileUpload name="File[]"  (onSelect)="onFileSelected($event)" auto="false"  showUploadButton="false">
+          <ng-template pTemplate="content">
+              <ul *ngIf="files.length">
+                  <li>{{ selectedFile.name }} - {{ selectedFile.size }} bytes</li>
+              </ul>
+          </ng-template>
+      </p-fileUpload>
+      <button pButton icon="pi pi-upload" label="Upload" (click)="uploadFile()" class=" flex h-2rem align-self-end ml-6 pr-3 " [disabled]="!selectedFile"></button>
+   
+
+
     </mat-dialog-content>
     
     <mat-dialog-actions align="end">
-        <button mat-raised-button color="primary">Submit</button>
+        <button mat-raised-button color="primary" (click)="addUser()" >Submit</button>
         <button mat-raised-button color="warn" mat-dialog-close >Close</button>
     </mat-dialog-actions>
     

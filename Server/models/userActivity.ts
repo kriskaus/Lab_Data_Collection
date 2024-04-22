@@ -6,6 +6,7 @@ interface UserActivityAttributes {
     loginTime: Date;
     logoutTime: Date | null;
     IPAddress: string;
+    role: string;
 }
 // UserActivity model for storing login/logout activities
 export default (sequelize: Sequelize, DataTypes: any) => {
@@ -15,6 +16,7 @@ export default (sequelize: Sequelize, DataTypes: any) => {
         declare loginTime: Date;
         declare logoutTime: Date | null;
         declare IPAddress: string;
+        declare role: string;
     
         static associate(models: any) {
             // Define associations here if needed
@@ -40,6 +42,10 @@ export default (sequelize: Sequelize, DataTypes: any) => {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    role: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    }
   }, {
     sequelize : connection,
     modelName: 'UserActivity',

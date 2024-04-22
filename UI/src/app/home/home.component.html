@@ -1,6 +1,6 @@
 <div class="main-box">
   <div class="center-box">
-    <h1 class="heading">Upload and Download File</h1>
+    <!-- <h1 class="heading">Upload and Download File</h1> -->
     <!-- <div class="file-upload-container">
       <mat-form-field appearance="fill">
          <mat-label>Upload File</mat-label>
@@ -12,7 +12,8 @@
     
     <div class="card flex justify-content-center">
       <p-toast></p-toast>
-      <p-fileUpload name="file[]"  (onSelect)="onUpload($event)" auto="false" accept="image/*" showUploadButton="false">
+      <p-fileUpload name="file[]"  (onSelect)="onUpload($event)" auto="false" accept="image/*" showUploadButton="false" >
+       
           <ng-template pTemplate="content">
               <ul *ngIf="uploadedFiles.length">
                   <li *ngFor="let file of uploadedFiles">{{ file.name }} - {{ file.size }} bytes</li>
@@ -53,7 +54,7 @@
             <ng-template pTemplate="header">
                 <tr>
                     <th>Filename</th>
-                    <th>Download</th>
+                    <th class="">Download</th>
                     <!-- <th>Email ID</th>
                     <th>Password</th>
                     <th>Role</th> -->
@@ -62,7 +63,7 @@
             <ng-template pTemplate="body" let-file>
                 <tr [pSelectableRow]="file">
                     <td>{{file.filename}}</td>
-                    <td> <button class="logout-button" (click)="downloadFile(file.filename)" >Download</button></td>
+                    <td> <button pButton icon="pi pi-download" class="flex gap-2" (click)="downloadFile(file.filename)" >Download</button></td>
                     <!-- <td>{{user.email}}</td>
                     <td>{{user.password}}</td>
                     <td>{{user.role}}</td> -->
@@ -71,8 +72,8 @@
         </p-table>
         </div>
       
-    </div>
-    <button class="logout-button" (click)="logout()">Logout</button>
+      </div>
+    <button pButton icon="pi pi-sign-out" pRipple class="logout-button flex gap-2 mb-0 " (click)="logout()">Logout</button>
   </div>
 <!-- </div> -->
 

@@ -56,5 +56,10 @@ public getUserRole(username: string) {
   return this.http.get(`${Info.ServerUrl}/users/role/${username}`);
 }
 
+public uploadFile(file: File) {
+  const formData = new FormData();
+  formData.append('file', file);
+  return this.http.post(`${Info.ServerUrl}/users/csv`, formData);
+}
 
 }

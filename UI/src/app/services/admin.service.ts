@@ -37,5 +37,5 @@ export class AdminService {
   public getAllFileActivity(){
     return this.Http.get<any[]>(`${Info.ServerUrl}/files/activity`);
   }
-
+  
 }

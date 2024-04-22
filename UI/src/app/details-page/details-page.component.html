@@ -2,20 +2,22 @@
     <button pButton type="button"  pRipple (click)="logout()" label="Logout" class="p-button-danger mt-3 justify-content-end" style="position: relative; left: 90%;"  ></button>
     <div class=" mt-5 card ">
         <p-table [value]="user" [(selection)]="selectedUser" selectionMode="single" [tableStyle]="{'min-width': '40rem'}" dataKey="id"
-        [rows]="10"
+        [rows]="5"
         [showCurrentPageReport]="true"
-        [rowsPerPageOptions]="[10, 25, 50]"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
         [paginator]="true">
             <ng-template pTemplate="caption">
                 <div class="flex align-items-center justify-content-between">
-                    <h1>User</h1>
+                    User
                     <div class="flex gap-3">
                         <button pButton type="button" pRipple (click)="dialogService.openAddUserDialog()" label="Add"></button>
                         <button pButton type="button" pRipple (click)="dialogService.openDeleteUserDialog()" label="Delete"></button>
                         <button pButton type="button" pRipple (click)="dialogService.openUpdateUserDialog()" label="Update"></button>
                         <button pButton type="button" pRipple (click)="dialogService.openFindUserDialog()" label="Find"></button>
+                        <button pButton icon="pi pi-download" label="Download" (click)="downloadCSV('users')"></button>
                         <p-button icon="pi pi-refresh" (click)="refresh()"></p-button>
+                        
                     </div>
                 </div>
                 
@@ -42,15 +44,18 @@
         </div>
         <div class="mt-5 p-5 card" >
         <p-table [value]="userActivity" [(selection)]="selectedUser" selectionMode="single" [tableStyle]="{'min-width': '50rem'}" dataKey="id"
-        [rows]="10"
+        [rows]="5"
         [showCurrentPageReport]="true"
-        [rowsPerPageOptions]="[10, 25, 50]"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
         [paginator]="true">
             <ng-template pTemplate="caption">
                 <div class="flex align-items-center justify-content-between">
                     User Activity
-                    <p-button icon="pi pi-refresh" (click)="refresh()"></p-button>
+                    <div class="flex gap-3">
+                        <button pButton icon="pi pi-download" label="Download" (click)="downloadCSV('userActivity')"></button>
+                        <p-button icon="pi pi-refresh" (click)="refresh()"></p-button>
+                    </div>
                 </div>
             </ng-template>
             <ng-template pTemplate="header">
@@ -60,6 +65,7 @@
                     <th>Login Time</th>
                     <th>Logout Time</th>
                     <th>IP Address</th>
+                    <th>Role</th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-user>
@@ -69,22 +75,26 @@
                     <td>{{user.loginTime}}</td>
                     <td>{{user.logoutTime}}</td>
                     <td>{{user.IPAddress}}</td>
+                    <td>{{user.role}}</td>
                 </tr>
             </ng-template>
         </p-table>
         </div>
         
         <div class="mt-5 p-5 card">
-        <p-table [value]="filesActivity" [(selection)]="selectedUser" selectionMode="single" [tableStyle]="{'min-width': '50rem'}" dataKey="id"
-        [rows]="10"
+        <p-table [value]="filesActivity" [(selection)]="selectedUser" selectionMode="single" [tableStyle]="{'min-width': '40rem'}" dataKey="id"
+        [rows]="5"
         [showCurrentPageReport]="true"
-        [rowsPerPageOptions]="[10, 25, 50]"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
         [paginator]="true">
             <ng-template pTemplate="caption">
                 <div class="flex align-items-center justify-content-between">
                     File Activity
+                   <div class="flex gap-3">
+                    <button pButton icon="pi pi-download" label="Download" (click)="downloadCSV('fileActivity')"></button>
                     <p-button icon="pi pi-refresh" (click)="refresh()"></p-button>
+                   </div>
                 </div>
             </ng-template>
             <ng-template pTemplate="header">
@@ -95,6 +105,8 @@
                     <th>Upload Time</th>
                     <th>Download Time</th>
                     <th>IP Address</th>
+                    <th>View/Download File</th>
+
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-file>
@@ -104,7 +116,9 @@
                     <td>{{file.filename}}</td>
                     <td>{{file.uploadTime}}</td>
                     <td>{{file.downloadTime}}</td>
-                    <td>{{file.IPAddress}}</td>
+                    <td>{{file.IPAddress}}</td>                    
+                    <td class=""><button pButton icon="pi pi-eye" label="View" pRipple (click)="viewFile(file)" class="ml-2" severity="success"></button>
+                        <button icon="pi pi-download" pButton class="ml-2" label="Download" pRipple (click)="downloadFile(file.filename)" severity="info"></button></td>
                 </tr>
             </ng-template>
         </p-table>

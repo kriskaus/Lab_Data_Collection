@@ -22,6 +22,9 @@ module.exports = {
         },
         IPAddress: {
           type: Sequelize.STRING
+        },
+        role:{
+          type: Sequelize.STRING,
         }
       
     })

@@ -5,6 +5,8 @@ import { MessageService } from 'primeng/api';
 import { UserService } from '../services/user.service';
 import { DiaolgService } from '../services/diaolg.service';
 import { Router } from '@angular/router';
+import { UploadService } from '../services/upload.service';
+import saveAs from 'file-saver';
 
 interface Column {
   field: string;
@@ -32,7 +34,7 @@ export class DetailsPageComponent implements OnInit {
   userActivity!: Users[];
   filesActivity!: Users[];
   visible: boolean = false;
-  constructor(private adminService: AdminService, private messageService: MessageService, 
+  constructor(private adminService: AdminService, private messageService: MessageService, private uploadService: UploadService ,
               private userService: UserService, public dialogService: DiaolgService, private router:Router) {}
 
   ngOnInit() {
@@ -99,6 +101,105 @@ export class DetailsPageComponent implements OnInit {
     this.getFilesActivity();
     this.getUserActivity();
    }
+
+   public downloadFile(filename: string | undefined) {
+    if (!filename) {
+      return;
+    }
+    this.uploadService.downloadFile(filename).subscribe({
+      next: (data) => {
+        // const downloadURL = window.URL.createObjectURL(data);
+        // const link = document.createElement('a');
+        // link.href = downloadURL;
+        // link.download = filename;
+        saveAs(data, filename);
+      },
+      error: (err) => {
+
+        console.error('Failed to download file', err);
+      },
+    });
+  }
+
+  downloadCSV(tableName: string) {
+    let csvContent = '';
+    let data ;
+
+    if(tableName === 'users'){
+        data = this.user; // Assuming this is your data source for the users table
+    }else if (tableName === 'userActivity') {
+        data = this.userActivity; // Assuming this is your data source for the userActivity table
+    } else if (tableName === 'fileActivity') {
+        data = this.filesActivity; // Assuming this is your data source for the filesActivity table
+    }
+
+    // Generate CSV header
+    const header = Object.keys(data![0]).join(',') + '\n';
+    csvContent += header;
+
+    // Generate CSV rows
+    data!.forEach(row => {
+        const rowData = Object.values(row).join(',') + '\n';
+        csvContent += rowData;
+    });
+
+    // Create a Blob from the CSV string
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    // Create a temporary anchor element to trigger the download
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${tableName}.csv`;
+    link.click();
+
+    // Clean up
+    URL.revokeObjectURL(url);
+  }
+
+  viewFile(file: any) {
+    // Implement logic to view the file based on its type
+    // Example: Open images in a new tab
+    const filename = file.filename;
+
+    if (!filename) {
+      return;
+    }
+    this.uploadService.downloadFile(filename).subscribe({
+      next: (data) => {
+        // const downloadURL = window.URL.createObjectURL(data);
+        // const link = document.createElement('a');
+        // link.href = downloadURL;
+        // link.download = filename;
+        const fileURL = URL.createObjectURL(data);
+      window.open(fileURL, '_blank');
+        // this.router.navigate(['/image-viewer'], { queryParams: { url: data } });
+      },
+      error: (err) => {
+
+        console.error('Failed to download file', err);
+      },
+    });
+
+    // if (!filename) {
+    //     console.error('File does not have a filename:', file);
+    //     return;
+    // }
+
+    // // Implement logic to view the file based on its type
+    // // Example: Open images in a new tab
+    // if (filename.endsWith('.jpg') || filename.endsWith('.jpeg') || filename.endsWith('.png')) {
+    //     window.open(`/api/files/${filename}`, '_blank');
+    // } else {
+    //     // Handle other file types (e.g., PDF, documents) accordingly
+    //     // For PDF files, you might use an embedded PDF viewer or open in a new tab
+    //     // For other file types, you might prompt the user to download or view in a compatible application
+    //     console.log('Unsupported file type:', file.type);
+    //     // Implement appropriate handling based on the file type
+    // }
+}
+
+
   // public findUser(){
   //   this.adminService.FindUser(this.username).subscribe({
   //     next: (data) => {

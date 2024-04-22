@@ -12,7 +12,7 @@ import { AppComponent } from './app.component';
 const routes: Routes = [
  {path:'', component: AppComponent,
     children: [
-                // { path: '', component: RegisterComponent },
+                { path: '', component: RegisterComponent },
                 { path: 'register', component: RegisterComponent },
                 { path: 'login', component: LoginComponent },
                 { path: 'home', component: HomeComponent,canActivate: [authGuard, roleGuard] },

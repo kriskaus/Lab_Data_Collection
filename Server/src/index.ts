@@ -7,22 +7,26 @@ import fs from 'fs';
 import passport from 'passport';
 import bcrypt from 'bcryptjs';
 import db from '../models';
+import os from "os";
 import sequelize  from "../config/dbConnect";
 import PassportInitialize from "./passportConfig";
 import {UpdateUserObject} from "../interface/UpdateUser";
-const SequelizeStore = require("connect-session-sequelize")(session.Store);
+import csv from "csv-parser"
+import ip from 'ip';
+// const SequelizeStore = require("connect-session-sequelize")(session.Store);
 
 const app = express();
 
 const port = process.env.PORT || 3000;
+const Ipaddress = "192.168.22.204"
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(session({
   secret: 'Lab_Server', // Change this to a random string
-  store: new SequelizeStore({
-    db:sequelize
-  }),
+  // store: new SequelizeStore({
+  //   db:sequelize
+  // }),
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -30,13 +34,18 @@ app.use(session({
       maxAge: 24 * 60 * 60 * 1000 // Session expiration time in milliseconds (e.g., 1 day)
   }
 }));
+
+app.set('trust proxy', true);
 // Initialize Passport.js middleware
 app.use(passport.initialize());
 app.use(passport.session());
-PassportInitialize(passport);
+PassportInitialize(passport,
+  (  username: any) =>{
+    return db.User.findOne({ where: { username } });}
+ );
 
 let id="";
-let ipAddress:string ;
+let ipAddress:string| null ;
 
 // Configure Passport.js
 
@@ -59,6 +68,25 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+const csvFilter = (req: any, file: { mimetype: string | string[]; }, cb: (error: Error | null, acceptFile: boolean)=> void) => {
+  if (file.mimetype.includes("csv")) {
+    cb(null, true);
+  } else {
+    cb(new Error("Please upload only csv file."), false);
+  }
+};
+
+var fileStorage = multer.diskStorage({
+  destination: (req: Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
+    cb(null,"uploads/");
+  },
+  filename: (req: Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
+    console.log(file.originalname);
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+   // @ts-ignore
+var uploadFile = multer({ storage: fileStorage, fileFilter: csvFilter });
 
 
 
@@ -69,18 +97,20 @@ let count = 1
 const printData = (req: Request, res:Response, next: NextFunction) => {
     console.log("\n==============================")
     console.log(`------------>  ${count++}`)
-
+    
+    console.log(`\n req.body -------> ` )
     console.log(`req.body.username -------> ${req.body.username}`) 
     console.log(`req.body.password -------> ${req.body.password}`)
 
     console.log(req.user)
 
-    console.log(`\n req.session.passport -------> `)
+    console.log(`\n req.session.passport -------> ${req.ip}`)
     console.log(req.session)
    
   
     console.log(`\n req.user -------> `) 
-    console.log(req.user) 
+    console.log(req.user)
+    console.log(req.ips[0])
   
     console.log("\n Session and Cookie")
     console.log(`req.session.id -------> ${req.session.id}`) 
@@ -100,15 +130,16 @@ app.use(printData)
 // / Serve static files from the React frontend app
 // app.use('/downloads', express.static(path.join(new URL('.', import.meta.url).pathname, 'downloads')));
 function ensureAuthenticated(req : Request, res:Response, next : NextFunction) {
-  if (req.isAuthenticated()) {
-    console.log(req.session)
+  console.log("rewe hc",req.isAuthenticated())
+  if (req.user) {
+    console.log("ensureAuthenticated",req.isAuthenticated())
       return next();
   }
   res.status(401).send('Unauthorized');
 }
 
 // API endpoint for uploading files
-app.post('/upload', upload.single('file'),async (req, res) => {
+app.post('/upload',ensureAuthenticated, upload.single('file'),async (req, res) => {
   try {
     // Extract relevant information from the request
     const userId = id;
@@ -139,7 +170,7 @@ app.post('/upload', upload.single('file'),async (req, res) => {
 
 
 // API endpoint for downloading files
-app.get('/download/:filename', async (req, res) => {
+app.get('/download/:filename',ensureAuthenticated, async (req, res) => {
   console.log(__dirname, __filename)
   const filename = req.params.filename; // Extract the filename from the request parameters
   const filePath = path.join(__dirname, '../uploads', filename); // Construct the file path
@@ -156,7 +187,7 @@ app.get('/download/:filename', async (req, res) => {
             downloadTime: null // Assuming logoutTime is a field that indicates whether the user has already logged out
           }
         });
-    console.log(fileActivity)
+    // console.log(fileActivity)
         if (fileActivity) {
           // Update the user activity entry with the logout time
           fileActivity.downloadTime=  new Date();
@@ -206,18 +237,56 @@ app.post('/register', async (req, res) => {
   }
 });
 
+function getWifiIPv4Address() {
+  const networkInterfaces = os.networkInterfaces();
+
+  // Find the Wi-Fi interface
+  const wifiInterface = networkInterfaces['Wi-Fi'];
+
+  if (!wifiInterface) {
+    // Wi-Fi interface not found
+    return null;
+  }
+
+  // Find the first non-internal IPv4 address
+  const wifiIPv4Address = wifiInterface.find((addressInfo) => {
+    return addressInfo.family === 'IPv4' && !addressInfo.internal;
+  });
+
+  if (!wifiIPv4Address) {
+    // IPv4 address not found
+    return null;
+  }
+
+  return wifiIPv4Address.address;
+}
 
 // Login route
 app.post('/login', passport.authenticate('local'), async (req, res, next) => {
   // req.session.save()
   id = req.body.username
-  console.log(req)
-  ipAddress = req.body.IPAddress;
-  const newUserActivity = await db.UserActivity.create({
+// const wifiIPv4Address = getWifiIPv4Address();
+// console.log('Wi-Fi IPv4 Address:', wifiIPv4Address);
+const wifiIPv4Address = ip.address()
+  // const ipAddress1 = os.networkInterfaces();
+  // // res.json({ ipAddress });
+  // console.log(ipAddress1);
+  // console.log("asdfdsasdfdsasdfdsasdfdsasdfds",req.ip)
+  const role = await db.User.findOne({where:{username:id}});
+  console.log("c jkjacsl0",role)
+  ipAddress = wifiIPv4Address;
+ try{
+  var newUserActivity = await db.UserActivity.create({
     userId: id,
     loginTime: new Date(),
     IPAddress: ipAddress,
+    role: role.role,
   })
+  // console.log(newUserActivity, role)
+ }
+  catch(error){
+    console.log(error)
+  }
   req.session.regenerate(function (err) {
     if (err) 
     { next(err); return; } // Ensure the function returns after calling next(err)
@@ -280,7 +349,7 @@ app.get('/files', async (req, res) => {
 
     // If files are found, return them in the response
     res.json(files);
-    console.log(files)
+    // console.log(files)
   } catch (error) {
     console.error('Error fetching files:', error);
     res.status(500).json({ error: 'An error occurred while fetching files' });
@@ -392,8 +461,59 @@ app.get('/files/activity', async (req, res) => {
   
 })
 
+app.post('/users/csv',upload.single('file'), async (req, res) => {
+  try {
+    if (req.file == undefined) {
+      return res.status(400).send("Please upload a CSV file!");
+    }
+    console.log("264664654", req.file)
+    const details: any[] = [];
+    const filename = req.file.filename; // Extract the filename from the request parameters
+    const filePath = path.join(__dirname, '../uploads', filename); // Construct the file path
+    console.log(filename, filePath);
+
+    fs.createReadStream(filePath)
+      .pipe(csv(    )) // <-- Added trim option
+      .on("error", (error: { message: any; }) => {
+        throw error.message;
+      })
+      .on("data", (row: any) => {
+        details.push(row);
+      })
+      .on("end", () => {
+        details.forEach(async (tutorial) => {
+          // Hash the password before inserting into the database
+          const hashedPassword = bcrypt.hashSync(tutorial.password, 10);; // Use bcrypt to hash the password
+  
+          // Modify the tutorial object to replace the plaintext password with the hashed password
+          tutorial.password = hashedPassword;
+      });
+      // Once all passwords are hashed, insert the data into the database
+        db.User.bulkCreate(details)
+          .then(() => {
+            res.status(200).send({
+              message:
+                "Uploaded the file successfully: " + req.file!.originalname,
+            });
+          })
+          .catch((error: { message: any; }) => {
+            res.status(500).send({
+              message: "Fail to import data into database!",
+              error: error.message,
+            });
+          });
+      });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: "Could not upload the file: " + req.file!.originalname,
+    });
+  }
+}
+)
+
 db.sequelize.sync().then(() =>{
-  app.listen(port, () => {
+  app.listen(+port,Ipaddress, () => {
     console.log(`Server is running on port  http://localhost:${port}`);
   });
 })
